@@ -1,11 +1,14 @@
 ## Golf Data Average Player Stats Calculations. Append to cleaned_golf.csv
 
 import pandas as pd
-import numpy as np
+pd.set_option('display.max_columns', None)
 
 df = pd.read_csv('/Users/eddieschwasnick/Resume Projects/probabilistic-outcome-modeling-for-golf-head-to-head-markets/data/data_cleaning/cleaned_golf_bets.csv')
 # reorganize based on time (year, event_id, round_num)
-df = df.sort_values(['year', 'event_id', 'round_num']).reset_index(drop=True)
+
+df['event_completed'] = pd.to_datetime(df['event_completed'], errors='coerce')
+
+df = df.sort_values(['event_completed', 'event_id', 'round_num']).reset_index(drop=True)
 
 # Player names are under a dg_id column, so we will group by that
 # Each row has three different dg_ids, and their respective player stats: p1_dg_id, p2_dg_id, p3_dg_id
@@ -33,9 +36,9 @@ for idx, row in df.iterrows():
             'row_idx': idx,
             'player_num': i,
             'dg_id': row[f'p{i}_dg_id'],
-            'year': row['year'],
             'event_id': row['event_id'],
-            'round_num': row['round_num']
+            'round_num': row['round_num'],
+            'event_completed': row['event_completed']
         }
         for stat in player_stats:
             player_data[stat] = row[f'{stat}_p{i}']
@@ -43,7 +46,7 @@ for idx, row in df.iterrows():
 
 # Convert into long-form dataframe: one row per player per match
 long_df = pd.DataFrame(rows)
-long_df = long_df.sort_values(['dg_id', 'year', 'event_id', 'round_num']).reset_index(drop=True)
+long_df = long_df.sort_values(['dg_id', 'event_completed', 'round_num', 'event_id']).reset_index(drop=True)
 
 # Compute rolling avgs for each player across only rounds before current date
 for stat in player_stats:
@@ -71,5 +74,5 @@ df = df.drop(columns=columns_to_drop)
 
 df.to_csv("clean_golf_rolling_averages.csv", index=False)
 
-
-
+# print rows 5-10
+print(df.iloc[1000:1020])
