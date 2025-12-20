@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('cleaned_golf.csv')
+df = pd.read_csv('/Users/eddieschwasnick/Resume Projects/probabilistic-outcome-modeling-for-golf-head-to-head-markets/data/data_cleaning/cleaned_golf_bets.csv')
 # reorganize based on time (year, event_id, round_num)
 df = df.sort_values(['year', 'event_id', 'round_num']).reset_index(drop=True)
 
@@ -69,7 +69,7 @@ for player_num in [1, 2, 3]:
 
 df = df.drop(columns=columns_to_drop)
 
-df.to_csv("cleaned_golf_rolling_averages.csv", index=False)
+df.to_csv("clean_golf_rolling_averages.csv", index=False)
 
 
 
